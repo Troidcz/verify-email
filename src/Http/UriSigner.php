@@ -23,6 +23,9 @@ class UriSigner implements UriSignerInterface
     public function sign(string $uri): string
     {
         $url = parse_url($uri);
+        if (!$url) {
+            throw new \RuntimeException();
+        }
         if (isset($url['query'])) {
             parse_str($url['query'], $params);
         } else {
@@ -38,6 +41,9 @@ class UriSigner implements UriSignerInterface
     public function check(string $uri): bool
     {
         $url = parse_url($uri);
+        if (!$url) {
+            throw new \RuntimeException();
+        }
         if (isset($url['query'])) {
             parse_str($url['query'], $params);
         } else {
@@ -56,9 +62,7 @@ class UriSigner implements UriSignerInterface
 
     public function checkRequest(Request $request): bool
     {
-        $qs = ($qs = $request->server->get('QUERY_STRING')) ? '?' . $qs : '';
-
-        return $this->check($request->getSchemeAndHttpHost() . $request->getBaseUrl() . $request->getPathInfo() . $qs);
+        return $this->check($request->getUrl()->getAbsoluteUrl());
     }
 
     private function computeHash(string $uri): string
@@ -66,6 +70,11 @@ class UriSigner implements UriSignerInterface
         return base64_encode(hash_hmac('sha256', $uri, $this->secret, true));
     }
 
+    /**
+     * @param array<string, int|string> $url
+     * @param array<string, int|string> $params
+     * @return string
+     */
     private function buildUrl(array $url, array $params = []): string
     {
         \ksort($params, \SORT_STRING);

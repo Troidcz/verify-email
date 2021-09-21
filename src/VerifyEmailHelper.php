@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Troidcz\VerifyEmail;
 
 use Nette\Application\LinkGenerator;
+use Nette\Http\Request;
 use Troidcz\VerifyEmail\Exception\ExpiredSignatureException;
 use Troidcz\VerifyEmail\Exception\InvalidSignatureException;
 use Troidcz\VerifyEmail\Exception\WrongEmailVerifyException;
@@ -47,7 +48,6 @@ class VerifyEmailHelper implements VerifyEmailHelperInterface
         $extraParams['token'] = $this->tokenGenerator->createToken($userId, $userEmail);
         $extraParams['expires'] = $expiryTimestamp;
 
-        // todo check for absolute path!
         $uri = $this->linkGenerator->link($routeName, $extraParams);
 
         $signature = $this->uriSigner->sign($uri);
@@ -57,6 +57,15 @@ class VerifyEmailHelper implements VerifyEmailHelperInterface
         }
 
         return new VerifyEmailSignatureComponents($expireAt, $signature, $generatedAt);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validateRequestEmailConfirmation(Request $request, string $userId, string $userEmail): void
+    {
+        $this->validateEmailConfirmation($request->getUrl()->getAbsoluteUrl(), $userId, $userEmail);
     }
 
     /**

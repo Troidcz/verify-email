@@ -10,8 +10,11 @@ use Tester\TestCase;
 
 class TestAbstract extends TestCase
 {
+    protected Container $container;
+
     public function __construct(
-        protected Container $container
+        Container $container
     ) {
+        $this->container = $container;
     }
 }

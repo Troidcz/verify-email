@@ -21,7 +21,7 @@ class VerifyEmailExtension extends CompilerExtension
 
         return Expect::structure([
             'debug' => Expect::bool($builder->parameters['debugMode']),
-            'lifetime' => Expect::int(),
+            'lifetime' => Expect::int(3600),
             'secretKey' => Expect::string()->required(),
         ]);
     }
@@ -30,9 +30,10 @@ class VerifyEmailExtension extends CompilerExtension
     {
         $builder = $this->getContainerBuilder();
 
+        $config = (array) $this->getConfig();
         $builder->addDefinition($this->prefix('verifyEmailTokenGenerator'))
             ->setFactory(VerifyEmailTokenGenerator::class)
-            ->setArguments([$this->config->secretKey]);
+            ->setArguments([$config['secretKey']]);
 
         $builder->addDefinition($this->prefix('verifyEmailQueryUtility'))
             ->setFactory(VerifyEmailQueryUtility::class);
@@ -40,10 +41,10 @@ class VerifyEmailExtension extends CompilerExtension
 
         $builder->addDefinition($this->prefix('uriSigner'))
             ->setFactory(UriSigner::class)
-            ->setArguments([$this->config->secretKey, 'signature']);
+            ->setArguments([$config['secretKey'], 'signature']);
 
         $builder->addDefinition($this->prefix('verifyEmailHelper'))
             ->setFactory(VerifyEmailHelper::class)
-            ->setArgument('lifetime', $this->config->lifetime);
+            ->setArgument('lifetime', $config['lifetime']);
     }
 }
