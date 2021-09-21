@@ -1,71 +1,88 @@
-name: main
+name: "main"
 
 on:
   pull_request:
+  push:
   schedule:
     - cron: "0 7 * * 1"
 
 env:
-  PHP_VERSION: "8.0"
-  extensions: "xml mbstring curl openssl dom gd zip intl json intl"
+  extensions: "xdebug"
   composer-install-args: "--no-progress --no-interaction --prefer-dist --no-scripts"
 
 jobs:
-  composer:
-    name: "Download composer"
-    runs-on: ubuntu-latest
+  qa:
+    name: "Quality assurance"
+    runs-on: "${{ matrix.operating-system }}"
+
+    strategy:
+      matrix:
+        include:
+          - operating-system: "ubuntu-latest"
+            php-version: "8.0"
+      fail-fast: false
+
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          extensions: "${{ env.extensions }}"
-          php-version: ${{ env.PHP_VERSION }}
+          php-version: "${{ matrix.php-version }}"
           coverage: none
-      - uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-${{ hashFiles('composer.lock') }}
 
       - uses: php-actions/composer@v6
         with:
-          php_extensions: "${{ env.extensions }}"
-          php_version: ${{ env.PHP_VERSION }}
-          args: "${{ env.composer-install-args }}"
-
-  qa:
-    name: "Quality assurance"
-    runs-on: "ubuntu-latest"
-    needs: composer
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: shivammathur/setup-php@v2
-        with:
-          extensions: "${{ env.extensions }}"
-          php-version: ${{ env.PHP_VERSION }}
-          coverage: none
-      - uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          php_version: "${{ matrix.php-version }}"
+          args:  "${{ env.composer-install-args }}"
       - run: composer @ecs
 
   static-analysis:
     name: "Static analysis"
-    runs-on: "ubuntu-latest"
-    needs: composer
+    runs-on: "${{ matrix.operating-system }}"
+
+    strategy:
+      matrix:
+        include:
+          - operating-system: "ubuntu-latest"
+            php-version: "8.0"
+          - operating-system: "ubuntu-latest"
+            php-version: "7.4"
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          extensions: "${{ env.extensions }}"
-          php-version: ${{ env.PHP_VERSION }}
+          php-version: "${{ matrix.php-version }}"
           coverage: none
 
-      - uses: actions/cache@v2
+      - uses: php-actions/composer@v6
         with:
-          path: vendor
-          key: ${{ runner.os }}-${{ hashFiles('composer.lock') }}
-
+          php_version: "${{ matrix.php-version }}"
+          args: "${{ env.composer-install-args }}"
       - run: composer @phpstan
+
+  tests:
+    name: "Tests"
+    runs-on: "${{ matrix.operating-system }}"
+
+    strategy:
+      matrix:
+        include:
+          - operating-system: "ubuntu-latest"
+            php-version: "8.0"
+          - operating-system: "ubuntu-latest"
+            php-version: "7.4"
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: none
+
+      - uses: php-actions/composer@v6
+        with:
+          php_version: "${{ matrix.php-version }}"
+          args: "${{ env.composer-install-args }}"
+      - run: composer @tests

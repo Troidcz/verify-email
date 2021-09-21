@@ -1,14 +1,14 @@
 {
-  "name": "troidcz/replace",
+  "name": "troidcz/verify-email",
   "homepage": "https://troid.cz",
-  "description": "__REPLACE__",
+  "description": "Simple, stylish Email Verification for Nette",
   "type": "nette-extension",
   "license": "MIT",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "support": {
     "email": "jsem@tomaskulhanek.cz",
-    "issues": "https://github.com/Troidcz/__REPLACE__/issues",
-    "source": "https://github.com/Troidcz/__REPLACE__"
+    "issues": "https://github.com/Troidcz/verify-email/issues",
+    "source": "https://github.com/Troidcz/verify-email"
   },
   "authors": [
     {
@@ -17,25 +17,31 @@
     }
   ],
   "require": {
-    "php": "^7.4|^8.0"
+    "php": "^7.4|^8.0",
+    "ext-json": "*",
+    "nette/application": "^3.1",
+    "nette/di": "^3.0",
+    "nette/http": "^3.1"
   },
   "autoload": {
     "psr-4": {
-      "Troidcz\\__REPLACE__\\": "src/"
+      "Troidcz\\VerifyEmail\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Troidcz\\Tests\\__REPLACE__\\": "tests/"
+      "Troidcz\\Tests\\VerifyEmail\\": "tests/Tests/"
     }
   },
   "require-dev": {
+    "nette/bootstrap": "^3.1",
+    "nette/tester": "^2.4",
     "phpstan/phpstan": "^0.12.98",
     "symplify/easy-coding-standard": "^9.4"
   },
   "archive": {
     "exclude": [
-      "/tests"
+      "/tests/Tests"
     ]
   },
   "config": {
@@ -50,6 +56,9 @@
     ],
     "@phpstan": [
       "php -d memory_limit=512M vendor/bin/phpstan analyse -c phpstan.neon"
+    ],
+    "@tests": [
+      "vendor/bin/tester -C tests/"
     ]
   }
 }
