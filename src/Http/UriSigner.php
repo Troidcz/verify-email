@@ -10,7 +10,7 @@ use Nette\Http\Request;
 class UriSigner implements UriSignerInterface
 {
     private string $secret;
-    private string $parameter = '_hash';
+    private string $parameter;
 
     public function __construct(
         string $secret,
