@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Troidcz\VerifyEmail\Http;
 
-use Nette\Http\Request;
+use Nette\Http\IRequest;
 
 class UriSigner implements UriSignerInterface
 {
@@ -60,7 +60,7 @@ class UriSigner implements UriSignerInterface
         return hash_equals($this->computeHash($this->buildUrl($url, $params)), $hash);
     }
 
-    public function checkRequest(Request $request): bool
+    public function checkRequest(IRequest $request): bool
     {
         return $this->check($request->getUrl()->getAbsoluteUrl());
     }

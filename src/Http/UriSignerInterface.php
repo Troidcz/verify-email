@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Troidcz\VerifyEmail\Http;
 
-use Nette\Http\Request;
+use Nette\Http\IRequest;
 
 interface UriSignerInterface
 {
@@ -13,5 +13,5 @@ interface UriSignerInterface
 
     public function check(string $uri): bool;
 
-    public function checkRequest(Request $request): bool;
+    public function checkRequest(IRequest $request): bool;
 }

@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace Troidcz\VerifyEmail;
 
 use Nette\Application\LinkGenerator;
-use Nette\Http\Request;
+use Nette\Http\IRequest;
 use Troidcz\VerifyEmail\Exception\ExpiredSignatureException;
 use Troidcz\VerifyEmail\Exception\InvalidSignatureException;
 use Troidcz\VerifyEmail\Exception\WrongEmailVerifyException;
@@ -63,7 +63,7 @@ class VerifyEmailHelper implements VerifyEmailHelperInterface
     /**
      * {@inheritdoc}
      */
-    public function validateRequestEmailConfirmation(Request $request, string $userId, string $userEmail): void
+    public function validateRequestEmailConfirmation(IRequest $request, string $userId, string $userEmail): void
     {
         $this->validateEmailConfirmation($request->getUrl()->getAbsoluteUrl(), $userId, $userEmail);
     }
